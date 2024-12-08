@@ -16,7 +16,13 @@ namespace ShortNotes
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
+#endif
+
+            builder.Services.AddTransient<MainPage>();
+
+#if ANDROID
+            builder.Services.AddSingleton<ISpeechToText, Platforms.SpeechToTextImplementation>();
 #endif
 
             return builder.Build();

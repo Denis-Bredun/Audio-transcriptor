@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShortNotes.MainPage">
 
-    <Grid>
+    <!--<Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.05*"/>
             <ColumnDefinition Width="0.9*"/>
@@ -48,6 +48,30 @@
             </ScrollView>
         </Border>
 
-    </Grid>
+    </Grid>-->
 
+    <ScrollView>
+        <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="Center">
+
+            <Label
+                Text="{Binding RecognitionText}"
+                FontSize="18"
+                HorizontalOptions="Center" />
+
+            <Button
+                Text="Listen"
+                Command="{Binding ListenCommand}"
+                HorizontalOptions="Center" />
+
+            <Button
+                Text="Listen Cancel"
+                Command="{Binding ListenCancelCommand}"
+                HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+    
 </ContentPage>
