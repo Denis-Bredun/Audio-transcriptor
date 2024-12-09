@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShortNotes.MainPage">
 
-    <!--<Grid>
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.05*"/>
             <ColumnDefinition Width="0.9*"/>
@@ -34,8 +34,8 @@
 
         <Button x:Name="startRecordingBt" 
                 Grid.Column="1" Grid.Row="3" 
-                Clicked="OnStartRecordingBtClicked" 
-                Text="Почати запис" FontSize="20"/>
+                Command="{Binding RecordAudioCommand}"
+                Text="Start recording" FontSize="20"/>
 
         <Border Grid.Column="1" Grid.Row="5" 
                 StrokeThickness="1" 
@@ -43,35 +43,12 @@
             <ScrollView 
                 HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Editor x:Name="fieldForOutput" 
+                        Text="{Binding RecognitionText}"
                         HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" 
                         FontSize="20" AutoSize="TextChanges"/>
             </ScrollView>
         </Border>
 
-    </Grid>-->
+    </Grid>
 
-    <ScrollView>
-        <VerticalStackLayout
-            Spacing="25"
-            Padding="30,0"
-            VerticalOptions="Center">
-
-            <Label
-                Text="{Binding RecognitionText}"
-                FontSize="18"
-                HorizontalOptions="Center" />
-
-            <Button
-                Text="Listen"
-                Command="{Binding ListenCommand}"
-                HorizontalOptions="Center" />
-
-            <Button
-                Text="Listen Cancel"
-                Command="{Binding ListenCancelCommand}"
-                HorizontalOptions="Center" />
-
-        </VerticalStackLayout>
-    </ScrollView>
-    
 </ContentPage>
