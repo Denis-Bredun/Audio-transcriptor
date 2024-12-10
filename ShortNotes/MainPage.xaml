@@ -23,11 +23,11 @@
                HorizontalOptions="Center" VerticalOptions="Center" FontSize="30">
             <Label.FormattedText>
                 <FormattedString>
-                    <Span x:Name="hoursSpan" Text="00"/>
+                    <Span x:Name="hoursSpan" Text="{Binding StopWatchHours}"/>
                     <Span Text=":"/>
-                    <Span x:Name="minutesSpan" Text="00"/>
+                    <Span x:Name="minutesSpan" Text="{Binding StopWatchMinutes}"/>
                     <Span Text=":"/>
-                    <Span x:Name="secondsSpan" Text="00"/>
+                    <Span x:Name="secondsSpan" Text="{Binding StopWatchSeconds}"/>
                 </FormattedString>
             </Label.FormattedText>
         </Label>

@@ -1,4 +1,4 @@
-﻿
+﻿using System.Diagnostics;
 using System.Globalization;
 
 namespace ShortNotes
@@ -8,9 +8,14 @@ namespace ShortNotes
         private ISpeechToText _speechToText;
         private CancellationTokenSource _tokenSource;
         private bool _isRecording;
+        private string _stopWatchHours, _stopWatchMinutes, _stopWatchSeconds;
+        private Stopwatch _stopwatch;
 
         public Command RecordAudioCommand { get; set; }
         public string RecognitionText { get; set; }
+        public string StopWatchHours { get; set; }
+        public string StopWatchMinutes { get; set; }
+        public string StopWatchSeconds { get; set; }
 
         public MainPage(ISpeechToText speechToText)
         {
@@ -19,9 +24,12 @@ namespace ShortNotes
             _speechToText = speechToText;
             _tokenSource = new CancellationTokenSource();
             _isRecording = false;
+            _stopwatch = new Stopwatch();
 
             RecordAudioCommand = new Command(RecordAudio);
             BindingContext = this;
+
+            UpdateStopwatchValues("00", "00", "00");
         }
 
         private async void RecordAudio()
@@ -50,10 +58,14 @@ namespace ShortNotes
                 {
                     ChangeRecordButtonState(120, 120, 120, "Stop recording", true);
 
+                    ResetStopwatch();
+
                     await ListenToSpeech();
                 }
                 catch (Exception ex)
                 {
+                    StopStopwatch();
+
                     if (_tokenSource.IsCancellationRequested == true)
                         await ActionAfterStoppingRecording();
                     else
@@ -62,6 +74,48 @@ namespace ShortNotes
             }
             else
                 await DisplayAlert("Permission Error", "No microphone access", "OK");
+        }
+
+        private void StartStopwatch()
+        {
+            _stopwatch.Start();
+            Task.Run(async () =>
+            {
+                while (_stopwatch.IsRunning && Application.Current != null)
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        UpdateStopwatchValues(_stopwatch.Elapsed.Hours.ToString("D2"),
+                                              _stopwatch.Elapsed.Minutes.ToString("D2"),
+                                              _stopwatch.Elapsed.Seconds.ToString("D2"));
+                    });
+
+                    await Task.Delay(1000);
+                }
+            });
+        }
+
+        private void UpdateStopwatchValues(string hours, string minutes, string seconds)
+        {
+            StopWatchHours = hours;
+            OnPropertyChanged("StopWatchHours");
+            StopWatchMinutes = minutes;
+            OnPropertyChanged("StopWatchMinutes");
+            StopWatchSeconds = seconds;
+            OnPropertyChanged("StopWatchSeconds");
+        }
+
+        private void ResetStopwatch()
+        {
+            StopStopwatch();
+            _stopwatch.Reset();
+            StartStopwatch();
+        }
+
+        private void StopStopwatch()
+        {
+            if (_stopwatch.IsRunning)
+                _stopwatch.Stop();
         }
 
         private async Task ListenToSpeech()
