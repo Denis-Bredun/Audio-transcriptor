@@ -43,7 +43,6 @@ namespace ShortNotes
         private async Task StartRecording()
         {
             var isAuthorized = await _speechToText.RequestPermissionsAsync();
-            string lineBeforeSilence = "";
 
             if (isAuthorized)
             {
@@ -51,37 +50,61 @@ namespace ShortNotes
                 {
                     ChangeRecordButtonState(120, 120, 120, "Stop recording", true);
 
-                    RecognitionText = await _speechToText.ListenAsync(
-                        CultureInfo.GetCultureInfo("uk-UA"),
-                        new Progress<string>(partialText =>
-                        {
-                            if (partialText.Length < lineBeforeSilence.Length)
-                            {
-                                RecognitionText += lineBeforeSilence;
-                                lineBeforeSilence = "";
-                            }
-
-                            lineBeforeSilence += partialText.Substring(lineBeforeSilence.Length);
-
-                            OnPropertyChanged(nameof(RecognitionText));
-                        }), _tokenSource.Token);
+                    await ListenToSpeech();
                 }
                 catch (Exception ex)
                 {
                     if (_tokenSource.IsCancellationRequested == true)
-                    {
-                        await DisplayAlert("Information", "Recording was stopped", "OK");
-                        RecognitionText += lineBeforeSilence;
-                        OnPropertyChanged(nameof(RecognitionText));
-                        lineBeforeSilence = "";
-                        _tokenSource = new CancellationTokenSource();
-                    }
+                        await ActionAfterStoppingRecording();
                     else
                         await DisplayAlert("Error", ex.Message, "OK");
                 }
             }
             else
                 await DisplayAlert("Permission Error", "No microphone access", "OK");
+        }
+
+        private async Task ListenToSpeech()
+        {
+            string constantPart = "";
+            bool putNewLine = false;
+
+            RecognitionText = await _speechToText.ListenAsync(
+                        CultureInfo.GetCultureInfo("uk-UA"),
+                        new Progress<string>(partialText =>
+                        {
+                            FormatRecognizedSpeech(ref constantPart, ref partialText, ref putNewLine);
+
+                            OnPropertyChanged(nameof(RecognitionText));
+                        }), _tokenSource.Token);
+        }
+
+        private void FormatRecognizedSpeech(ref string constantPart, ref string partialText, ref bool putNewLine)
+        {
+            if (partialText == "")
+            {
+                constantPart = RecognitionText;
+                putNewLine = true;
+            }
+
+            if (putNewLine)
+            {
+                if (DoesntConstantPartContainTransferingToNewLine(constantPart))
+                    constantPart += ". \n";
+
+                RecognitionText = $"{constantPart}{partialText}";
+                putNewLine = false;
+            }
+            else
+                RecognitionText = $"{constantPart}{partialText}";
+        }
+
+        private bool DoesntConstantPartContainTransferingToNewLine(string constantPart) => constantPart.Length > 0 && constantPart[constantPart.Length - 1] != '\n' && constantPart != "";
+
+        private async Task ActionAfterStoppingRecording()
+        {
+            await DisplayAlert("Information", "Recording was stopped", "OK");
+            _tokenSource = new CancellationTokenSource();
         }
 
         private void StopRecording()
