@@ -48,13 +48,12 @@ namespace ShortNotes
             }
             if (_isRecording == false)
             {
-                bool continueIfEditorHasText = await ContinueIfEditorHasText();
+                bool shouldBeVanished = await VanishLastTextOrContinue();
 
-                if (continueIfEditorHasText)
-                {
-                    CleanEditorAndVariables();
-                    await StartRecording();
-                }
+                if (shouldBeVanished)
+                    CleanEditor();
+
+                await StartRecording();
             }
             else
                 StopRecording();
@@ -182,21 +181,15 @@ namespace ShortNotes
             _tokenSource?.Cancel();
         }
 
-        private async Task<bool> ContinueIfEditorHasText()
+        private async Task<bool> VanishLastTextOrContinue()
         {
             if (string.IsNullOrEmpty(fieldForOutput.Text))
                 return true;
             else
-                return await DisplayAlert("Підтвердження", "Поле містить текст. "
-                    + "Початок нового запису його стере."
-                    + "Бажаєте продовжити?", "Так", "Ні");
+                return await DisplayAlert("Питання", "Бажаєте стерти останній текст чи продовжити запис?", "Стерти", "Продовжити");
         }
 
-        private void CleanEditorAndVariables()
-        {
-            fieldForOutput.Text = "";
-            RecognitionText = "";
-        }
+        private void CleanEditor() => RecognitionText = "";
 
         private void ChangeRecordButtonState(int red, int green, int blue, string Text, bool isRecordingState, bool isTextFieldReadonly)
         {
