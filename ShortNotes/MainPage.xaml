@@ -35,7 +35,7 @@
         <Button x:Name="startRecordingBt" 
                 Grid.Column="1" Grid.Row="3" 
                 Command="{Binding RecordAudioCommand}"
-                Text="Start recording" FontSize="20"/>
+                Text="Розпочати запис" FontSize="20"/>
 
         <Border Grid.Column="1" Grid.Row="5" 
                 StrokeThickness="1" 

@@ -24,7 +24,7 @@ namespace ShortNotes.Platforms
 
             _listener = new SpeechRecognitionListener
             {
-                Error = ex => taskResult.TrySetException(new Exception($"Failure in speech engine - {ex}!")),
+                Error = ex => taskResult.TrySetException(new Exception($"Збій мовного механізму - {ex}!")),
                 PartialResults = sentence =>
                 {
                     recognitionResult?.Report(sentence);
@@ -35,7 +35,7 @@ namespace ShortNotes.Platforms
             _speechRecognizer = SpeechRecognizer.CreateSpeechRecognizer(Android.App.Application.Context);
 
             if (_speechRecognizer is null)
-                throw new ArgumentException("Speech recognizer is not available!");
+                throw new ArgumentException("Розпізнавач мовлення недоступний!");
 
             _speechRecognizer.SetRecognitionListener(_listener);
             _speechRecognizer.StartListening(CreateSpeechIntent(culture));

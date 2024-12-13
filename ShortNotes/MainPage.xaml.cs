@@ -36,7 +36,7 @@ namespace ShortNotes
         {
             if (!CheckInternetConnection())
             {
-                await DisplayAlert("Error", "No Internet connection", "OK");
+                await DisplayAlert("Помилка", "Немає Інтернет-підключення", "OK");
                 return;
             }
             if (_isRecording == false)
@@ -63,7 +63,7 @@ namespace ShortNotes
             {
                 try
                 {
-                    ChangeRecordButtonState(120, 120, 120, "Stop recording", true, true);
+                    ChangeRecordButtonState(120, 120, 120, "Зупинити запис", true, true);
 
                     ResetStopwatch();
 
@@ -76,13 +76,13 @@ namespace ShortNotes
                     if (_tokenSource.IsCancellationRequested == true)
                         await ActionAfterStoppingRecording();
                     else
-                        await DisplayAlert("Error", ex.Message, "OK");
+                        await DisplayAlert("Помилка", ex.Message, "OK");
 
-                    ChangeRecordButtonState(0, 0, 0, "Start recording", false, false);
+                    ChangeRecordButtonState(0, 0, 0, "Розпочати запис", false, false);
                 }
             }
             else
-                await DisplayAlert("Permission Error", "No microphone access", "OK");
+                await DisplayAlert("Помилка дозволу", "Немає доступу до мікрофону", "OK");
         }
 
         private void StartStopwatch()
@@ -166,7 +166,7 @@ namespace ShortNotes
 
         private async Task ActionAfterStoppingRecording()
         {
-            await DisplayAlert("Information", "Recording was stopped", "OK");
+            await DisplayAlert("Інформація", "Запис був зупинений", "OK");
             _tokenSource = new CancellationTokenSource();
         }
 
@@ -180,9 +180,9 @@ namespace ShortNotes
             if (string.IsNullOrEmpty(fieldForOutput.Text))
                 return true;
             else
-                return await DisplayAlert("Confirmation", "Text field contains text. "
-                    + "The start of the new record will vanish last text."
-                    + "Do you want to continue?", "Yes", "No");
+                return await DisplayAlert("Підтвердження", "Поле містить текст. "
+                    + "Початок нового запису його стере."
+                    + "Бажаєте продовжити?", "Так", "Ні");
         }
 
         private void CleanEditorAndVariables()

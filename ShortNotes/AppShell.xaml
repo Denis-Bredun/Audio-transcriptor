@@ -8,7 +8,7 @@
     Title="ShortNotes">
 
     <ShellContent
-        Title="Home"
+        Title="Домашня сторінка"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
