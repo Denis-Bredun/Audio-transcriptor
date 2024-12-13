@@ -77,6 +77,8 @@ namespace ShortNotes
                         await ActionAfterStoppingRecording();
                     else
                         await DisplayAlert("Error", ex.Message, "OK");
+
+                    ChangeRecordButtonState(0, 0, 0, "Start recording", false, false);
                 }
             }
             else
@@ -170,7 +172,6 @@ namespace ShortNotes
 
         private void StopRecording()
         {
-            ChangeRecordButtonState(0, 0, 0, "Start recording", false, false);
             _tokenSource?.Cancel();
         }
 
