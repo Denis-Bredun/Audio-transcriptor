@@ -44,7 +44,6 @@
         <AbsoluteLayout Grid.Column="1" Grid.Row="5">
             <Border StrokeThickness="1"
                     Stroke="Black"
-                    BackgroundColor="#333333"
                     AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
                     AbsoluteLayout.LayoutFlags="All">
                 <ScrollView HorizontalOptions="FillAndExpand"
