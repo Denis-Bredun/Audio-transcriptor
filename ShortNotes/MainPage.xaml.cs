@@ -56,7 +56,7 @@ namespace ShortNotes
             {
                 try
                 {
-                    ChangeRecordButtonState(120, 120, 120, "Stop recording", true);
+                    ChangeRecordButtonState(120, 120, 120, "Stop recording", true, true);
 
                     ResetStopwatch();
 
@@ -163,7 +163,7 @@ namespace ShortNotes
 
         private void StopRecording()
         {
-            ChangeRecordButtonState(0, 0, 0, "Start recording", false);
+            ChangeRecordButtonState(0, 0, 0, "Start recording", false, false);
             _tokenSource?.Cancel();
         }
 
@@ -183,10 +183,11 @@ namespace ShortNotes
             RecognitionText = "";
         }
 
-        private void ChangeRecordButtonState(int red, int green, int blue, string Text, bool isRecordingState)
+        private void ChangeRecordButtonState(int red, int green, int blue, string Text, bool isRecordingState, bool isTextFieldReadonly)
         {
             startRecordingBt.BackgroundColor = Color.FromRgb(red, green, blue);
             startRecordingBt.Text = Text;
+            fieldForOutput.IsReadOnly = isTextFieldReadonly;
             _isRecording = isRecordingState;
         }
     }
