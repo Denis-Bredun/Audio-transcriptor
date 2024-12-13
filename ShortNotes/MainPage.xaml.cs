@@ -34,6 +34,11 @@ namespace ShortNotes
 
         private async void RecordAudio()
         {
+            if (!CheckInternetConnection())
+            {
+                await DisplayAlert("Error", "No Internet connection", "OK");
+                return;
+            }
             if (_isRecording == false)
             {
                 bool continueIfEditorHasText = await ContinueIfEditorHasText();
@@ -47,6 +52,8 @@ namespace ShortNotes
             else
                 StopRecording();
         }
+
+        private bool CheckInternetConnection() => Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
 
         private async Task StartRecording()
         {
