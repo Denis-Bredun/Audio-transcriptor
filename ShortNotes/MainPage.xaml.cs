@@ -12,6 +12,7 @@ namespace ShortNotes
         private Stopwatch _stopwatch;
 
         public Command RecordAudioCommand { get; set; }
+        public Command AddToClipboardCommand { get; set; }
         public string RecognitionText { get; set; }
         public string StopWatchHours { get; set; }
         public string StopWatchMinutes { get; set; }
@@ -27,9 +28,15 @@ namespace ShortNotes
             _stopwatch = new Stopwatch();
 
             RecordAudioCommand = new Command(RecordAudio);
+            AddToClipboardCommand = new Command(AddToClipboard);
             BindingContext = this;
 
             UpdateStopwatchValues("00", "00", "00");
+        }
+
+        private async void AddToClipboard()
+        {
+            await Clipboard.SetTextAsync(fieldForOutput.Text);
         }
 
         private async void RecordAudio()

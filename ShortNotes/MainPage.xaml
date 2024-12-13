@@ -5,51 +5,68 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.05*"/>
-            <ColumnDefinition Width="0.9*"/>
-            <ColumnDefinition Width="0.05*"/>
+            <ColumnDefinition Width="0.05*" />
+            <ColumnDefinition Width="0.9*" />
+            <ColumnDefinition Width="0.05*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.15*"/>
-            <RowDefinition Height="0.2*"/>
-            <RowDefinition Height="0.05*"/>
-            <RowDefinition Height="0.1*"/>
-            <RowDefinition Height="0.05*"/>
-            <RowDefinition Height="0.4*"/>
-            <RowDefinition Height="0.05*"/>
+            <RowDefinition Height="0.15*" />
+            <RowDefinition Height="0.2*" />
+            <RowDefinition Height="0.05*" />
+            <RowDefinition Height="0.1*" />
+            <RowDefinition Height="0.05*" />
+            <RowDefinition Height="0.4*" />
+            <RowDefinition Height="0.05*" />
         </Grid.RowDefinitions>
 
-        <Label Grid.Column="1" Grid.Row="1" 
-               HorizontalOptions="Center" VerticalOptions="Center" FontSize="30">
+        <Label Grid.Column="1" Grid.Row="1"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               FontSize="30">
             <Label.FormattedText>
                 <FormattedString>
-                    <Span TextColor="White" x:Name="hoursSpan" Text="{Binding StopWatchHours}"/>
-                    <Span TextColor="White" Text=":"/>
-                    <Span TextColor="White" x:Name="minutesSpan" Text="{Binding StopWatchMinutes}"/>
-                    <Span TextColor="White" Text=":"/>
-                    <Span TextColor="White" x:Name="secondsSpan" Text="{Binding StopWatchSeconds}"/>
+                    <Span TextColor="White" x:Name="hoursSpan" Text="{Binding StopWatchHours}" />
+                    <Span TextColor="White" Text=":" />
+                    <Span TextColor="White" x:Name="minutesSpan" Text="{Binding StopWatchMinutes}" />
+                    <Span TextColor="White" Text=":" />
+                    <Span TextColor="White" x:Name="secondsSpan" Text="{Binding StopWatchSeconds}" />
                 </FormattedString>
             </Label.FormattedText>
         </Label>
 
-        <Button x:Name="startRecordingBt" 
-                Grid.Column="1" Grid.Row="3" 
+        <Button x:Name="startRecordingBt"
+                Grid.Column="1"
+                Grid.Row="3"
                 Command="{Binding RecordAudioCommand}"
-                Text="Розпочати запис" FontSize="20"/>
+                Text="Розпочати запис"
+                FontSize="20" />
 
-        <Border Grid.Column="1" Grid.Row="5" 
-                StrokeThickness="1" 
-                Stroke="Black" BackgroundColor="#333333">
-            <ScrollView 
-                HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-                <Editor x:Name="fieldForOutput" 
-                        Text="{Binding RecognitionText}"
-                        TextColor="White"
-                        HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" 
-                        FontSize="20" AutoSize="TextChanges"/>
-            </ScrollView>
-        </Border>
+        <AbsoluteLayout Grid.Column="1" Grid.Row="5">
+            <Border StrokeThickness="1"
+                    Stroke="Black"
+                    BackgroundColor="#333333"
+                    AbsoluteLayout.LayoutBounds="0, 0, 1, 1"
+                    AbsoluteLayout.LayoutFlags="All">
+                <ScrollView HorizontalOptions="FillAndExpand"
+                            VerticalOptions="FillAndExpand">
+                    <Editor x:Name="fieldForOutput"
+                            Text="{Binding RecognitionText}"
+                            TextColor="White"
+                            FontSize="20"
+                            AutoSize="TextChanges"
+                            HorizontalOptions="FillAndExpand"
+                            VerticalOptions="FillAndExpand" />
+                </ScrollView>
+            </Border>
 
+            <Button AbsoluteLayout.LayoutBounds="1, 0, 0.2, 0.2"
+                    AbsoluteLayout.LayoutFlags="All"
+                    Opacity="0.7"
+                    Text="Copy"
+                    FontSize="18"
+                    Command="{Binding AddToClipboardCommand}"/>
+            
+        </AbsoluteLayout>
     </Grid>
 
 </ContentPage>
