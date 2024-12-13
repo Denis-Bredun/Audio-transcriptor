@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage Background="#4d4d4d" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShortNotes.MainPage">
 
@@ -23,11 +23,11 @@
                HorizontalOptions="Center" VerticalOptions="Center" FontSize="30">
             <Label.FormattedText>
                 <FormattedString>
-                    <Span x:Name="hoursSpan" Text="{Binding StopWatchHours}"/>
-                    <Span Text=":"/>
-                    <Span x:Name="minutesSpan" Text="{Binding StopWatchMinutes}"/>
-                    <Span Text=":"/>
-                    <Span x:Name="secondsSpan" Text="{Binding StopWatchSeconds}"/>
+                    <Span TextColor="White" x:Name="hoursSpan" Text="{Binding StopWatchHours}"/>
+                    <Span TextColor="White" Text=":"/>
+                    <Span TextColor="White" x:Name="minutesSpan" Text="{Binding StopWatchMinutes}"/>
+                    <Span TextColor="White" Text=":"/>
+                    <Span TextColor="White" x:Name="secondsSpan" Text="{Binding StopWatchSeconds}"/>
                 </FormattedString>
             </Label.FormattedText>
         </Label>
@@ -39,11 +39,12 @@
 
         <Border Grid.Column="1" Grid.Row="5" 
                 StrokeThickness="1" 
-                Stroke="Black" BackgroundColor="#e1e1e1">
+                Stroke="Black" BackgroundColor="#333333">
             <ScrollView 
                 HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
                 <Editor x:Name="fieldForOutput" 
                         Text="{Binding RecognitionText}"
+                        TextColor="White"
                         HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" 
                         FontSize="20" AutoSize="TextChanges"/>
             </ScrollView>
