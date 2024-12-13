@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage Background="#4d4d4d" xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ShortNotes.MainPage">
 
@@ -25,11 +25,11 @@
                FontSize="30">
             <Label.FormattedText>
                 <FormattedString>
-                    <Span TextColor="White" x:Name="hoursSpan" Text="{Binding StopWatchHours}" />
-                    <Span TextColor="White" Text=":" />
-                    <Span TextColor="White" x:Name="minutesSpan" Text="{Binding StopWatchMinutes}" />
-                    <Span TextColor="White" Text=":" />
-                    <Span TextColor="White" x:Name="secondsSpan" Text="{Binding StopWatchSeconds}" />
+                    <Span x:Name="hoursSpan" Text="{Binding StopWatchHours}" />
+                    <Span Text=":" />
+                    <Span x:Name="minutesSpan" Text="{Binding StopWatchMinutes}" />
+                    <Span Text=":" />
+                    <Span x:Name="secondsSpan" Text="{Binding StopWatchSeconds}" />
                 </FormattedString>
             </Label.FormattedText>
         </Label>
@@ -51,7 +51,6 @@
                             VerticalOptions="FillAndExpand">
                     <Editor x:Name="fieldForOutput"
                             Text="{Binding RecognitionText}"
-                            TextColor="White"
                             FontSize="20"
                             AutoSize="TextChanges"
                             HorizontalOptions="FillAndExpand"
@@ -65,7 +64,7 @@
                     Text="Copy"
                     FontSize="18"
                     Command="{Binding AddToClipboardCommand}"/>
-            
+
         </AbsoluteLayout>
     </Grid>
 

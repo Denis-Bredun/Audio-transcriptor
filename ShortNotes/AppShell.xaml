@@ -5,8 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:ShortNotes"
     Shell.FlyoutBehavior="Disabled"
-    Title="ShortNotes"
-    BackgroundColor="#292828">
+    Title="ShortNotes">
 
     <ShellContent        
         Title="Домашня сторінка"
