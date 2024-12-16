@@ -37,6 +37,7 @@
             <Style x:Key="CommonEditorStyle" TargetType="Editor">
                 <Setter Property="FontSize" Value="20" />
                 <Setter Property="AutoSize" Value="TextChanges" />
+                <Setter Property="IsReadOnly" Value="True" />
                 <Setter Property="HorizontalOptions" Value="FillAndExpand" />
                 <Setter Property="VerticalOptions" Value="FillAndExpand" />
             </Style>
@@ -72,12 +73,9 @@
 
         <Border Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3"
                 Style="{StaticResource CommonBorderStyle}">
-            <Picker Style="{StaticResource CommonPickerStyle}">
-                <Picker.Items>
-                    <x:String>Українська</x:String>
-                    <x:String>Англійська</x:String>
-                    <x:String>Російська</x:String>
-                </Picker.Items>
+            <Picker Style="{StaticResource CommonPickerStyle}" 
+                    ItemsSource="{Binding Languages}" 
+                    SelectedItem="{Binding SelectedLanguage}">
             </Picker>
         </Border>
 
@@ -94,14 +92,20 @@
             </Label.FormattedText>
         </Label>
 
-        <ImageButton Source="start.png" Grid.Column="2" Grid.Row="4"
-                     Style="{StaticResource CommonImageButtonStyle}"/>
+        <ImageButton x:Name="recordButton" 
+                     Source="start.png" Grid.Column="2" Grid.Row="4"
+                     Style="{StaticResource CommonImageButtonStyle}"
+                     Command="{Binding RecordAudioCommand}"/>
         <ImageButton Source="clean.png" Grid.Column="4" Grid.Row="4"
-                     Style="{StaticResource CommonImageButtonStyle}"/>
-        <ImageButton Source="edit.png" Grid.Column="2" Grid.Row="8"
-                     Style="{StaticResource CommonImageButtonStyle}"/>
+                     Style="{StaticResource CommonImageButtonStyle}"
+                     Command="{Binding CleanCommand}"/>
+        <ImageButton x:Name="editButton" Source="not_editing.png" 
+                     Grid.Column="2" Grid.Row="8"
+                     Style="{StaticResource CommonImageButtonStyle}"
+                     Command="{Binding EditCommand}"/>
         <ImageButton Source="copy.png" Grid.Column="4" Grid.Row="8"
-                     Style="{StaticResource CommonImageButtonStyle}"/>
+                     Style="{StaticResource CommonImageButtonStyle}"
+                     Command="{Binding AddToClipboardCommand}"/>
 
         <Border Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="5"
                 Style="{StaticResource CommonBorderStyle}">

@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Core;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace ShortNotes
 {
@@ -7,195 +10,261 @@ namespace ShortNotes
         private ISpeechToText _speechToText;
         private CancellationTokenSource _tokenSource;
         private bool _isRecording;
-        private string _stopWatchHours, _stopWatchMinutes, _stopWatchSeconds;
         private Stopwatch _stopwatch;
+        private bool _isEditable;
+        private string _selectedLanguage;
 
         public Command RecordAudioCommand { get; set; }
         public Command AddToClipboardCommand { get; set; }
+        public Command CleanCommand { get; set; }
+        public Command EditCommand { get; set; }
         public string RecognitionText { get; set; }
         public string StopWatchHours { get; set; }
         public string StopWatchMinutes { get; set; }
         public string StopWatchSeconds { get; set; }
 
+        public string SelectedLanguage
+        {
+            get => _selectedLanguage;
+            set
+            {
+                if (_selectedLanguage != value)
+                {
+                    _selectedLanguage = value;
+                    OnPropertyChanged(nameof(SelectedLanguage));
+                }
+            }
+        }
+
+        public List<string> Languages { get; } = new List<string>
+        {
+            "Українська",
+            "Англійська",
+            "Російська"
+        };
+
         public MainPage(ISpeechToText speechToText)
         {
             InitializeComponent();
 
-            //_speechToText = speechToText;
-            //_tokenSource = new CancellationTokenSource();
-            //_isRecording = false;
-            //_stopwatch = new Stopwatch();
+            _speechToText = speechToText;
+            _tokenSource = new CancellationTokenSource();
+            _isRecording = false;
+            _stopwatch = new Stopwatch();
 
-            //RecordAudioCommand = new Command(RecordAudio);
-            //AddToClipboardCommand = new Command(AddToClipboard);
-            //BindingContext = this;
+            RecordAudioCommand = new Command(RecordAudio);
+            AddToClipboardCommand = new Command(AddToClipboard);
+            CleanCommand = new Command(CleanEditor);
+            EditCommand = new Command(ChangeEditMode);
+            BindingContext = this;
 
-            //UpdateStopwatchValues("00", "00", "00");
+            SelectedLanguage = Languages.First();
+
+            UpdateStopwatchValues("00", "00", "00");
         }
 
-        //private async void AddToClipboard()
-        //{
-        //    await Clipboard.SetTextAsync(fieldForOutput.Text);
-        //}
+        private CultureInfo GetCultureInfoFromLanguage(string language)
+        {
+            return language switch
+            {
+                "Українська" => CultureInfo.GetCultureInfo("uk-UA"),
+                "Англійська" => CultureInfo.GetCultureInfo("en-US"),
+                "Російська" => CultureInfo.GetCultureInfo("ru-RU"),
+                _ => CultureInfo.InvariantCulture
+            };
+        }
 
-        //private async void RecordAudio()
-        //{
-        //    if (!CheckInternetConnection())
-        //    {
-        //        await DisplayAlert("Помилка", "Немає Інтернет-підключення", "OK");
-        //        return;
-        //    }
-        //    if (_isRecording == false)
-        //    {
-        //        bool shouldBeVanished = await VanishLastTextOrContinue();
+        private async Task ShowToastAsync(string message)
+        {
+            var toast = Toast.Make(message, ToastDuration.Short, 20);
+            await toast.Show();
+        }
 
-        //        if (shouldBeVanished)
-        //            CleanEditor();
+        private async Task<bool> ShowConfirmationDialogAsync(string title, string message, string accept, string cancel)
+        {
+            return await DisplayAlert(title, message, accept, cancel);
+        }
 
-        //        await StartRecording();
-        //    }
-        //    else
-        //        StopRecording();
-        //}
+        private async void AddToClipboard()
+        {
+            await Clipboard.SetTextAsync(fieldForOutput.Text);
+            await ShowToastAsync("Дані успішно скопійовані!");
+        }
 
-        //private bool CheckInternetConnection() => Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
+        private async void CleanEditor()
+        {
+            var isCleaned = await ShowConfirmationDialogAsync("Питання", "Ви дійсно бажаєте стерти текст та онулити час?", "Так", "Ні");
 
-        //private async Task StartRecording()
-        //{
-        //    var isAuthorized = await _speechToText.RequestPermissionsAsync();
+            if (isCleaned)
+            {
+                RecognitionText = "";
+                OnPropertyChanged(nameof(RecognitionText));
+                UpdateStopwatchValues("00", "00", "00");
+                await ShowToastAsync("Текст був успішно стертий!");
+            }
+        }
 
-        //    if (isAuthorized)
-        //    {
-        //        try
-        //        {
-        //            ChangeRecordButtonState(120, 120, 120, "Зупинити запис", true, true);
+        private async Task SetEditModeAsync(bool isEditable, string toastMessage, string iconSource)
+        {
+            fieldForOutput.IsReadOnly = !isEditable;
+            editButton.Source = iconSource;
+            _isEditable = isEditable;
+            await ShowToastAsync(toastMessage);
+        }
 
-        //            ResetStopwatch();
+        private async void ChangeEditMode()
+        {
+            if (_isEditable)
+            {
+                await SetEditModeAsync(false, "Ви вийшли з режиму редагування.", "not_editing.png");
+            }
+            else
+            {
+                _isEditable = await ShowConfirmationDialogAsync("Питання", "Бажаєте редагувати текст?", "Так", "Ні");
 
-        //            await ListenToSpeech();
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            StopStopwatch();
+                if (_isEditable)
+                {
+                    await SetEditModeAsync(true, "Ви увійшли в режим редагування.", "is_editing.png");
+                }
+            }
+        }
 
-        //            if (_tokenSource.IsCancellationRequested == true)
-        //                await ActionAfterStoppingRecording();
-        //            else
-        //                await DisplayAlert("Помилка", ex.Message, "OK");
+        private async Task<bool> CheckInternetConnection()
+        {
+            var isConnected = Connectivity.Current.NetworkAccess == NetworkAccess.Internet;
 
-        //            ChangeRecordButtonState(0, 0, 0, "Розпочати запис", false, false);
-        //        }
-        //    }
-        //    else
-        //        await DisplayAlert("Помилка дозволу", "Немає доступу до мікрофону", "OK");
-        //}
+            if (isConnected == false)
+                await ShowToastAsync("Немає Інтернет-підключення");
 
-        //private void StartStopwatch()
-        //{
-        //    _stopwatch.Start();
-        //    Task.Run(async () =>
-        //    {
-        //        while (_stopwatch.IsRunning && Application.Current != null)
-        //        {
-        //            MainThread.BeginInvokeOnMainThread(() =>
-        //            {
-        //                UpdateStopwatchValues(_stopwatch.Elapsed.Hours.ToString("D2"),
-        //                                      _stopwatch.Elapsed.Minutes.ToString("D2"),
-        //                                      _stopwatch.Elapsed.Seconds.ToString("D2"));
-        //            });
+            return isConnected;
+        }
 
-        //            await Task.Delay(1000);
-        //        }
-        //    });
-        //}
+        private void UpdateStopwatchValues(string hours, string minutes, string seconds)
+        {
+            StopWatchHours = hours;
+            OnPropertyChanged("StopWatchHours");
+            StopWatchMinutes = minutes;
+            OnPropertyChanged("StopWatchMinutes");
+            StopWatchSeconds = seconds;
+            OnPropertyChanged("StopWatchSeconds");
+        }
 
-        //private void UpdateStopwatchValues(string hours, string minutes, string seconds)
-        //{
-        //    StopWatchHours = hours;
-        //    OnPropertyChanged("StopWatchHours");
-        //    StopWatchMinutes = minutes;
-        //    OnPropertyChanged("StopWatchMinutes");
-        //    StopWatchSeconds = seconds;
-        //    OnPropertyChanged("StopWatchSeconds");
-        //}
+        private async void RecordAudio()
+        {
+            var isConnected = await CheckInternetConnection();
 
-        //private void ResetStopwatch()
-        //{
-        //    StopStopwatch();
-        //    _stopwatch.Reset();
-        //    StartStopwatch();
-        //}
+            if (!isConnected) return;
 
-        //private void StopStopwatch()
-        //{
-        //    if (_stopwatch.IsRunning)
-        //        _stopwatch.Stop();
-        //}
+            if (_isRecording == false)
+                await StartRecording();
+            else
+                StopRecording();
+        }
 
-        //private async Task ListenToSpeech()
-        //{
-        //    string constantPart = "";
-        //    bool putNewLine = false;
+        private async Task StartRecording()
+        {
+            var isAuthorized = await _speechToText.RequestPermissionsAsync();
 
-        //    RecognitionText = await _speechToText.ListenAsync(
-        //                CultureInfo.GetCultureInfo("uk-UA"),
-        //                new Progress<string>(partialText =>
-        //                {
-        //                    FormatRecognizedSpeech(ref constantPart, ref partialText, ref putNewLine);
+            if (isAuthorized)
+            {
+                try
+                {
+                    _isRecording = true;
+                    recordButton.Source = "pause.png";
 
-        //                    OnPropertyChanged(nameof(RecognitionText));
-        //                }), _tokenSource.Token);
-        //}
+                    StartStopwatch();
 
-        //private void FormatRecognizedSpeech(ref string constantPart, ref string partialText, ref bool putNewLine)
-        //{
-        //    if (partialText == "")
-        //    {
-        //        constantPart = RecognitionText;
-        //        putNewLine = true;
-        //    }
+                    await ListenToSpeech();
+                }
+                catch (Exception ex)
+                {
+                    StopStopwatch();
 
-        //    if (putNewLine)
-        //    {
-        //        if (DoesntConstantPartContainTransferingToNewLine(constantPart))
-        //            constantPart += ". \n";
+                    if (_tokenSource.IsCancellationRequested == true)
+                        await ActionAfterStoppingRecording();
+                    else
+                        await ShowToastAsync(ex.Message);
 
-        //        RecognitionText = $"{constantPart}{partialText}";
-        //        putNewLine = false;
-        //    }
-        //    else
-        //        RecognitionText = $"{constantPart}{partialText}";
-        //}
+                    _isRecording = false;
+                    recordButton.Source = "start.png";
+                }
+            }
+            else
+                await ShowToastAsync("Немає доступу до мікрофону");
+        }
 
-        //private bool DoesntConstantPartContainTransferingToNewLine(string constantPart) => constantPart.Length > 0 && constantPart[constantPart.Length - 1] != '\n' && constantPart != "";
+        private void StartStopwatch()
+        {
+            _stopwatch.Start();
+            Task.Run(async () =>
+            {
+                while (_stopwatch.IsRunning && Application.Current != null)
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        UpdateStopwatchValues(_stopwatch.Elapsed.Hours.ToString("D2"),
+                                              _stopwatch.Elapsed.Minutes.ToString("D2"),
+                                              _stopwatch.Elapsed.Seconds.ToString("D2"));
+                    });
 
-        //private async Task ActionAfterStoppingRecording()
-        //{
-        //    await DisplayAlert("Інформація", "Запис був зупинений", "OK");
-        //    _tokenSource = new CancellationTokenSource();
-        //}
+                    await Task.Delay(1000);
+                }
+            });
+        }
 
-        //private void StopRecording()
-        //{
-        //    _tokenSource?.Cancel();
-        //}
+        private void StopStopwatch()
+        {
+            if (_stopwatch.IsRunning)
+                _stopwatch.Stop();
+        }
 
-        //private async Task<bool> VanishLastTextOrContinue()
-        //{
-        //    if (string.IsNullOrEmpty(fieldForOutput.Text))
-        //        return true;
-        //    else
-        //        return await DisplayAlert("Питання", "Бажаєте стерти останній текст чи продовжити запис?", "Стерти", "Продовжити");
-        //}
+        private async Task ListenToSpeech()
+        {
+            var culture = GetCultureInfoFromLanguage(SelectedLanguage);
 
-        //private void CleanEditor() => RecognitionText = "";
+            string constantPart = "";
+            bool putNewLine = false;
 
-        //private void ChangeRecordButtonState(int red, int green, int blue, string Text, bool isRecordingState, bool isTextFieldReadonly)
-        //{
-        //    startRecordingBt.BackgroundColor = Color.FromRgb(red, green, blue);
-        //    startRecordingBt.Text = Text;
-        //    fieldForOutput.IsReadOnly = isTextFieldReadonly;
-        //    _isRecording = isRecordingState;
-        //}
+            RecognitionText = await _speechToText.ListenAsync(
+                culture,
+                new Progress<string>(partialText =>
+                {
+                    FormatRecognizedSpeech(ref constantPart, ref partialText, ref putNewLine);
+                    OnPropertyChanged(nameof(RecognitionText));
+                }), _tokenSource.Token);
+        }
+
+        private void FormatRecognizedSpeech(ref string constantPart, ref string partialText, ref bool putNewLine)
+        {
+            if (partialText == "")
+            {
+                constantPart = RecognitionText;
+                putNewLine = true;
+            }
+
+            if (putNewLine)
+            {
+                if (DoesntConstantPartContainTransferingToNewLine(constantPart))
+                    constantPart += ". \n";
+
+                RecognitionText = $"{constantPart}{partialText}";
+                putNewLine = false;
+            }
+            else
+                RecognitionText = $"{constantPart}{partialText}";
+        }
+
+        private bool DoesntConstantPartContainTransferingToNewLine(string constantPart) => constantPart != null && constantPart.Length > 0 && constantPart[constantPart.Length - 1] != '\n' && constantPart != "";
+
+        private async Task ActionAfterStoppingRecording()
+        {
+            await ShowToastAsync("Запис був зупинений");
+            _tokenSource = new CancellationTokenSource();
+        }
+
+        private void StopRecording()
+        {
+            _tokenSource?.Cancel();
+        }
     }
 }
