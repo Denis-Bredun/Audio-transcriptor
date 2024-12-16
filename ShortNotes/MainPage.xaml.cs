@@ -171,6 +171,7 @@ namespace ShortNotes
                 {
                     _isRecording = true;
                     recordButton.Source = "pause.png";
+                    ChangeStateOfButtonsWhenRecording(_isRecording);
 
                     StartStopwatch();
 
@@ -187,6 +188,7 @@ namespace ShortNotes
 
                     _isRecording = false;
                     recordButton.Source = "start.png";
+                    ChangeStateOfButtonsWhenRecording(_isRecording);
                 }
             }
             else
@@ -265,6 +267,17 @@ namespace ShortNotes
         private void StopRecording()
         {
             _tokenSource?.Cancel();
+        }
+
+        private async void ChangeStateOfButtonsWhenRecording(bool isRecording)
+        {
+            languagePicker.IsEnabled = !isRecording;
+            cleanButton.IsEnabled = !isRecording;
+            editButton.IsEnabled = !isRecording;
+            copyButton.IsEnabled = !isRecording;
+
+            if (_isEditable)
+                await SetEditModeAsync(false, "Ви вийшли з режиму редагування.", "not_editing.png");
         }
     }
 }

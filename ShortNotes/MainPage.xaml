@@ -73,7 +73,8 @@
 
         <Border Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3"
                 Style="{StaticResource CommonBorderStyle}">
-            <Picker Style="{StaticResource CommonPickerStyle}" 
+            <Picker x:Name="languagePicker"
+                    Style="{StaticResource CommonPickerStyle}" 
                     ItemsSource="{Binding Languages}" 
                     SelectedItem="{Binding SelectedLanguage}">
             </Picker>
@@ -96,14 +97,16 @@
                      Source="start.png" Grid.Column="2" Grid.Row="4"
                      Style="{StaticResource CommonImageButtonStyle}"
                      Command="{Binding RecordAudioCommand}"/>
-        <ImageButton Source="clean.png" Grid.Column="4" Grid.Row="4"
+        <ImageButton x:Name="cleanButton"
+                     Source="clean.png" Grid.Column="4" Grid.Row="4"
                      Style="{StaticResource CommonImageButtonStyle}"
                      Command="{Binding CleanCommand}"/>
         <ImageButton x:Name="editButton" Source="not_editing.png" 
                      Grid.Column="2" Grid.Row="8"
                      Style="{StaticResource CommonImageButtonStyle}"
                      Command="{Binding EditCommand}"/>
-        <ImageButton Source="copy.png" Grid.Column="4" Grid.Row="8"
+        <ImageButton x:Name="copyButton"
+                     Source="copy.png" Grid.Column="4" Grid.Row="8"
                      Style="{StaticResource CommonImageButtonStyle}"
                      Command="{Binding AddToClipboardCommand}"/>
 
